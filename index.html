@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penjana One Page Report (OPR) Profesional</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+
+    /* Standard A4 Aspect Ratio Simulation */
+    .a4-sheet {
+      width: 210mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      padding: 10mm 12mm;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+    }
+
+    /* Print Specific Styles */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .a4-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+      }
+      .a4-sheet {
+        box-shadow: none !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased text-slate-800">
+
+  <!-- Top Navigation Bar -->
+  <header class="no-print bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center shadow-md">
+          <i class="fa-solid fa-file-invoice text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 leading-none">Pintar OPR Studio</h1>
+          <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Penjana One Page Report Eksekutif & Sekolah</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="btnSampleData" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+          <span class="hidden sm:inline">Isi Contoh</span>
+        </button>
+        <button id="btnReset" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span class="hidden sm:inline">Kosongkan</span>
+        </button>
+        <button id="btnPrint" type="button" class="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg shadow-md hover:shadow-lg transition-all active:scale-95">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>Cetak / Simpan PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- LEFT COLUMN: Input Forms -->
+    <aside class="no-print lg:col-span-5 space-y-6">
+      
+      <!-- Theme Selector Card -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">
+          <i class="fa-solid fa-palette text-blue-500 mr-1.5"></i> Tema Warna Estetik
+        </label>
+        <div class="grid grid-cols-4 gap-2">
+          <button type="button" data-theme="sapphire" class="theme-btn border-2 border-blue-600 rounded-xl p-2 text-center flex flex-col items-center gap-1.5 bg-blue-50/60 hover:bg-blue-50 transition">
+            <span class="w-5 h-5 rounded-full bg-[#0b2545] shadow-xs"></span>
+            <span class="text-[11px] font-bold text-slate-700">Sapphire</span>
+          </button>
+          <button type="button" data-theme="emerald" class="theme-btn border border-slate-200 rounded-xl p-2 text-center flex flex-col items-center gap-1.5 hover:bg-slate-50 transition">
+            <span class="w-5 h-5 rounded-full bg-[#064e3b] shadow-xs"></span>
+            <span class="text-[11px] font-semibold text-slate-600">Emerald</span>
+          </button>
+          <button type="button" data-theme="berry" class="theme-btn border border-slate-200 rounded-xl p-2 text-center flex flex-col items-center gap-1.5 hover:bg-slate-50 transition">
+            <span class="w-5 h-5 rounded-full bg-[#581c87] shadow-xs"></span>
+            <span class="text-[11px] font-semibold text-slate-600">Berry</span>
+          </button>
+          <button type="button" data-theme="slate" class="theme-btn border border-slate-200 rounded-xl p-2 text-center flex flex-col items-center gap-1.5 hover:bg-slate-50 transition">
+            <span class="w-5 h-5 rounded-full bg-[#1e293b] shadow-xs"></span>
+            <span class="text-[11px] font-semibold text-slate-600">Slate</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Form Container -->
+      <form id="oprForm" class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-6">
+        
+        <!-- Bahagian 1: Maklumat Asas Program -->
+        <div class="space-y-3.5">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+            <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">1</span>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wide">Maklumat Asas Program</h3>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Sekolah / Institusi</label>
+            <input type="text" id="inSchool" class="w-full text-xs sm:text-sm px-3.5 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="SMK Seri Bintang Selatan">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Program / Aktiviti <span class="text-red-500">*</span></label>
+            <input type="text" id="inProgramName" class="w-full text-xs sm:text-sm px-3.5 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 font-semibold outline-none transition" placeholder="Karnival Sains & Inovasi STEM 2026">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Anjuran / Panitia</label>
+              <input type="text" id="inOrganizer" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Panitia Sains & Komputer">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Kumpulan Sasaran</label>
+              <input type="text" id="inTarget" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Murid Tingkatan 4 & 5">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tarikh & Hari</label>
+              <input type="text" id="inDate" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="23 Okt 2026 (Jumaat)">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Masa</label>
+              <input type="text" id="inTime" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="8.00 pagi - 1.00 petang">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tempat</label>
+              <input type="text" id="inLocation" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Dewan Perdana">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bahagian 2: Objektif & Impak -->
+        <div class="space-y-3.5">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+            <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">2</span>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wide">Objektif & Ringkasan Impak</h3>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-semibold text-slate-700">Objektif Program</label>
+              <span class="text-[11px] text-slate-400">Tekan enter untuk senarai</span>
+            </div>
+            <textarea id="inObjectives" rows="3" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="• Meningkatkan minat murid dalam bidang sains dan robotik.&#10;• Memupuk daya cipta dan kemahiran berpasukan.&#10;• Memberi platform pembentangan inovasi murid."></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Ringkasan Aktiviti / Impak</label>
+            <textarea id="inImpact" rows="3" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Program berjalan lancar dengan penyertaan seramai 220 orang murid. Murid aktif mereka bentuk prototaip sains dengan bimbingan guru penasihat. Tahap maklum balas mencapai 98% kepuasan."></textarea>
+          </div>
+        </div>
+
+        <!-- Bahagian 3: 5 Keping Gambar -->
+        <div class="space-y-3.5">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">3</span>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wide">5 Keping Gambar & Kapsyen</h3>
+            </div>
+            <button type="button" id="btnFillSamplePhotos" class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition">
+              <i class="fa-solid fa-images mr-1"></i>Foto Sampel
+            </button>
+          </div>
+
+          <div id="photosInputContainer" class="space-y-3">
+            <!-- Dynamic 5 Photo upload inputs will render here -->
+          </div>
+        </div>
+
+        <!-- Bahagian 4: Pengesahan -->
+        <div class="space-y-3.5">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+            <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">4</span>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wide">Pengesahan / Tandatangan</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+              <span class="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">Disediakan Oleh:</span>
+              <div class="space-y-1.5">
+                <input type="text" id="inPreparedName" class="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nama Pelapor (cth: Siti Aminah)">
+                <input type="text" id="inPreparedRole" class="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Jawatan (cth: Setiausaha Program)">
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+              <span class="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">Disahkan Oleh:</span>
+              <div class="space-y-1.5">
+                <input type="text" id="inVerifiedName" class="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nama Pengetua / Guru Kanan">
+                <input type="text" id="inVerifiedRole" class="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Jawatan (cth: Penolong Kanan Pentadbiran)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </aside>
+
+    <!-- RIGHT COLUMN: A4 Live Preview -->
+    <section class="lg:col-span-7 flex flex-col items-center">
+      
+      <div class="no-print w-full flex items-center justify-between mb-3 px-1 text-xs text-slate-500 font-medium">
+        <span class="flex items-center gap-1.5">
+          <i class="fa-solid fa-eye text-blue-600"></i>
+          Pratonton A4 (Muat Tepat 1 Halaman)
+        </span>
+        <span class="bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full font-bold text-[11px]">
+          A4 Standard
+        </span>
+      </div>
+
+      <!-- Scroll wrapper to keep sheet nicely visible -->
+      <div class="a4-wrapper w-full overflow-x-auto pb-8">
+        
+        <!-- THE A4 PRINTABLE DOCUMENT -->
+        <article id="oprDocument" class="a4-sheet theme-sapphire text-slate-800">
+          
+          <!-- Top Accent Line -->
+          <div id="themeTopBar" class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-900 via-blue-700 to-indigo-600"></div>
+
+          <!-- HEADER SECTION -->
+          <header class="pt-1.5 pb-2 border-b-2 border-slate-200 flex justify-between items-start gap-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span id="badgeSchool" class="px-2.5 py-0.5 rounded-sm text-[10px] font-extrabold tracking-wider uppercase bg-blue-50 text-blue-800 border border-blue-200">
+                  SMK SERI BINTANG SELATAN
+                </span>
+                <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                  LAPORAN SATU HALAMAN (OPR)
+                </span>
+              </div>
+              <h1 id="outProgramName" class="text-base sm:text-lg leading-tight font-extrabold text-slate-900 tracking-tight uppercase">
+                Karnival Sains, Teknologi & Inovasi STEM 2026
+              </h1>
+              <p id="outOrganizer" class="text-[11px] font-semibold text-blue-700 mt-0.5">
+                Anjuran: Panitia Sains & Kelab Komputer
+              </p>
+            </div>
+
+            <!-- Header Badge Info -->
+            <div class="text-right flex flex-col items-end shrink-0">
+              <div class="w-10 h-10 rounded-lg bg-slate-900 text-white flex flex-col items-center justify-center p-1 shadow-xs" id="themeLogoBox">
+                <i class="fa-solid fa-award text-sm"></i>
+                <span class="text-[8px] font-bold tracking-widest uppercase mt-0.5">OPR</span>
+              </div>
+              <span class="text-[9px] font-bold text-slate-400 mt-1 uppercase" id="outDocId">OPR-2026/01</span>
+            </div>
+          </header>
+
+          <!-- METADATA GRID TABLE -->
+          <section class="my-1.5 bg-slate-50 border border-slate-200 rounded-lg p-2 grid grid-cols-4 gap-2 text-[10.5px]">
+            <div class="border-r border-slate-200 pr-2">
+              <span class="block text-[9px] uppercase font-bold text-slate-400">Tarikh & Hari</span>
+              <strong id="outDate" class="text-slate-800 font-bold leading-tight block truncate">23 Okt 2026 (Jumaat)</strong>
+            </div>
+            <div class="border-r border-slate-200 px-2">
+              <span class="block text-[9px] uppercase font-bold text-slate-400">Masa</span>
+              <strong id="outTime" class="text-slate-800 font-bold leading-tight block truncate">8:00 AM - 1:00 PM</strong>
+            </div>
+            <div class="border-r border-slate-200 px-2">
+              <span class="block text-[9px] uppercase font-bold text-slate-400">Tempat</span>
+              <strong id="outLocation" class="text-slate-800 font-bold leading-tight block truncate">Dewan Perdana</strong>
+            </div>
+            <div class="pl-2">
+              <span class="block text-[9px] uppercase font-bold text-slate-400">Sasaran</span>
+              <strong id="outTarget" class="text-slate-800 font-bold leading-tight block truncate">Murid Tingkatan 4 & 5</strong>
+            </div>
+          </section>
+
+          <!-- CONTENT: OBJEKTIF & RINGKASAN IMPAK -->
+          <section class="grid grid-cols-12 gap-2 my-1">
+            <!-- Objektif -->
+            <div class="col-span-5 bg-white border border-slate-200 rounded-lg p-2 flex flex-col justify-between shadow-xs">
+              <div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-blue-900 border-b border-slate-100 pb-1 mb-1.5 flex items-center gap-1.5" id="themeObjHeader">
+                  <i class="fa-solid fa-bullseye text-[10px]"></i> Objektif Program
+                </h4>
+                <ul id="outObjectives" class="text-[9.5px] leading-relaxed text-slate-700 space-y-1 pl-3.5 list-disc">
+                  <li>Memberi pendedahan amali terhadap sains robotik dan kod asas.</li>
+                  <li>Mencungkil bakat reka cipta dan inovasi murid di peringkat sekolah.</li>
+                  <li>Meningkatkan penglibatan aktif murid dalam aktiviti STEM interaktif.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Ringkasan & Impak -->
+            <div class="col-span-7 bg-white border border-slate-200 rounded-lg p-2 flex flex-col justify-between shadow-xs">
+              <div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-blue-900 border-b border-slate-100 pb-1 mb-1.5 flex items-center gap-1.5" id="themeImpHeader">
+                  <i class="fa-solid fa-chart-line text-[10px]"></i> Ringkasan & Impak Aktiviti
+                </h4>
+                <p id="outImpact" class="text-[9.5px] leading-relaxed text-slate-700">
+                  Program berjalan lancar dengan penyertaan 220 orang murid. Murid aktif mereka bentuk prototaip sains dengan bimbingan guru dan fasilitator. Maklum balas menunjukkan tahap kepuasan 98% peserta.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- PHOTO COLLAGE (EXACTLY 5 PHOTOS) -->
+          <section class="my-1 flex-1 flex flex-col justify-center">
+            <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-camera text-blue-600" id="themeCamIcon"></i>
+                Rakaman Visual Aktiviti & Dokumentasi
+              </span>
+              <span class="text-[9px] text-slate-400 font-medium">5 Keping Foto Pilihan</span>
+            </div>
+
+            <!-- 5 Photo Collage Layout -->
+            <div class="grid grid-cols-4 gap-1.5">
+              
+              <!-- Photo 1 (Featured Wide - Top) -->
+              <div class="col-span-4 bg-slate-100 border border-slate-200 rounded-md overflow-hidden flex flex-col">
+                <div class="h-40 w-full overflow-hidden bg-slate-200 relative flex items-center justify-center">
+                  <img id="outPhoto1" src="" alt="Foto 1" class="w-full h-full object-cover hidden">
+                  <div id="outPhotoPh1" class="text-slate-400 text-xs flex flex-col items-center gap-1">
+                    <i class="fa-regular fa-image text-xl"></i>
+                    <span class="text-[10px]">Foto 1 (Utama)</span>
+                  </div>
+                </div>
+                <div class="px-2 py-0.5 bg-slate-900/90 text-white text-[9px] truncate font-medium" id="outCap1">
+                  1. Sesi Pembukaan & Taklimat Program
+                </div>
+              </div>
+
+              <!-- Photo 2 -->
+              <div class="col-span-1 bg-slate-100 border border-slate-200 rounded-md overflow-hidden flex flex-col">
+                <div class="h-24 w-full overflow-hidden bg-slate-200 relative flex items-center justify-center">
+                  <img id="outPhoto2" src="" alt="Foto 2" class="w-full h-full object-cover hidden">
+                  <div id="outPhotoPh2" class="text-slate-400 text-xs flex flex-col items-center">
+                    <i class="fa-regular fa-image text-sm"></i>
+                    <span class="text-[8px] mt-0.5">Foto 2</span>
+                  </div>
+                </div>
+                <div class="px-1.5 py-0.5 bg-slate-800 text-white text-[8px] truncate font-normal" id="outCap2">
+                  2. Bengkel Amali
+                </div>
+              </div>
+
+              <!-- Photo 3 -->
+              <div class="col-span-1 bg-slate-100 border border-slate-200 rounded-md overflow-hidden flex flex-col">
+                <div class="h-24 w-full overflow-hidden bg-slate-200 relative flex items-center justify-center">
+                  <img id="outPhoto3" src="" alt="Foto 3" class="w-full h-full object-cover hidden">
+                  <div id="outPhotoPh3" class="text-slate-400 text-xs flex flex-col items-center">
+                    <i class="fa-regular fa-image text-sm"></i>
+                    <span class="text-[8px] mt-0.5">Foto 3</span>
+                  </div>
+                </div>
+                <div class="px-1.5 py-0.5 bg-slate-800 text-white text-[8px] truncate font-normal" id="outCap3">
+                  3. Uji Kaji Murid
+                </div>
+              </div>
+
+              <!-- Photo 4 -->
+              <div class="col-span-1 bg-slate-100 border border-slate-200 rounded-md overflow-hidden flex flex-col">
+                <div class="h-24 w-full overflow-hidden bg-slate-200 relative flex items-center justify-center">
+                  <img id="outPhoto4" src="" alt="Foto 4" class="w-full h-full object-cover hidden">
+                  <div id="outPhotoPh4" class="text-slate-400 text-xs flex flex-col items-center">
+                    <i class="fa-regular fa-image text-sm"></i>
+                    <span class="text-[8px] mt-0.5">Foto 4</span>
+                  </div>
+                </div>
+                <div class="px-1.5 py-0.5 bg-slate-800 text-white text-[8px] truncate font-normal" id="outCap4">
+                  4. Pembentangan
+                </div>
+              </div>
+
+              <!-- Photo 5 -->
+              <div class="col-span-1 bg-slate-100 border border-slate-200 rounded-md overflow-hidden flex flex-col">
+                <div class="h-24 w-full overflow-hidden bg-slate-200 relative flex items-center justify-center">
+                  <img id="outPhoto5" src="" alt="Foto 5" class="w-full h-full object-cover hidden">
+                  <div id="outPhotoPh5" class="text-slate-400 text-xs flex flex-col items-center">
+                    <i class="fa-regular fa-image text-sm"></i>
+                    <span class="text-[8px] mt-0.5">Foto 5</span>
+                  </div>
+                </div>
+                <div class="px-1.5 py-0.5 bg-slate-800 text-white text-[8px] truncate font-normal" id="outCap5">
+                  5. Penyampaian Hadiah
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- SIGNATURE FOOTER SECTION -->
+          <footer class="mt-2 pt-2 border-t border-slate-200 grid grid-cols-2 gap-8 text-[10px]">
+            <div>
+              <p class="text-slate-500 font-semibold mb-6">Disediakan Oleh:</p>
+              <div class="border-b border-slate-400 w-44 mb-1"></div>
+              <strong id="outPreparedName" class="block text-slate-800 font-bold uppercase tracking-tight">Siti Aminah Binti Mansor</strong>
+              <span id="outPreparedRole" class="block text-slate-500 text-[9px]">Penyelaras STEM SMK SBS</span>
+            </div>
+
+            <div class="text-right flex flex-col items-end">
+              <p class="text-slate-500 font-semibold mb-6">Disahkan Oleh:</p>
+              <div class="border-b border-slate-400 w-44 mb-1"></div>
+              <strong id="outVerifiedName" class="block text-slate-800 font-bold uppercase tracking-tight">Hj. Razali Bin Othman</strong>
+              <span id="outVerifiedRole" class="block text-slate-500 text-[9px]">Penolong Kanan Pentadbiran</span>
+            </div>
+          </footer>
+
+        </article>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- APPLICATION LOGIC JAVASCRIPT -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // 1. Generate 5 Photo Input Slots Dynamically
+      const photosContainer = document.getElementById('photosInputContainer');
+      for (let i = 1; i <= 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5';
+        slot.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-700">Gambar ${i} ${i === 1 ? '<span class="text-blue-600 font-semibold">(Utama / Banner)</span>' : ''}</span>
+            <button type="button" class="btn-clear-photo text-[10px] text-red-500 hover:text-red-700 font-semibold" data-index="${i}">
+              <i class="fa-solid fa-xmark mr-0.5"></i>Padam
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="file" id="photoInput${i}" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+          </div>
+          <input type="text" id="capInput${i}" class="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Kapsyen Gambar ${i}...">
+        `;
+        photosContainer.appendChild(slot);
+      }
+
+      // 2. Real-time Text Binding Mapping
+      const textBindings = [
+        { in: 'inSchool', out: 'badgeSchool', def: 'SMK SERI BINTANG SELATAN' },
+        { in: 'inProgramName', out: 'outProgramName', def: 'Karnival Sains, Teknologi & Inovasi STEM 2026' },
+        { in: 'inOrganizer', out: 'outOrganizer', prefix: 'Anjuran: ', def: 'Panitia Sains & Kelab Komputer' },
+        { in: 'inDate', out: 'outDate', def: '23 Okt 2026 (Jumaat)' },
+        { in: 'inTime', out: 'outTime', def: '8:00 AM - 1:00 PM' },
+        { in: 'inLocation', out: 'outLocation', def: 'Dewan Perdana' },
+        { in: 'inTarget', out: 'outTarget', def: 'Murid Tingkatan 4 & 5' },
+        { in: 'inImpact', out: 'outImpact', def: 'Program berjalan lancar dengan maklum balas positif daripada semua peserta.' },
+        { in: 'inPreparedName', out: 'outPreparedName', def: 'Siti Aminah Binti Mansor' },
+        { in: 'inPreparedRole', out: 'outPreparedRole', def: 'Penyelaras STEM SMK SBS' },
+        { in: 'inVerifiedName', out: 'outVerifiedName', def: 'Hj. Razali Bin Othman' },
+        { in: 'inVerifiedRole', out: 'outVerifiedRole', def: 'Penolong Kanan Pentadbiran' },
+      ];
+
+      textBindings.forEach(binding => {
+        const inputEl = document.getElementById(binding.in);
+        const outputEl = document.getElementById(binding.out);
+        if (inputEl && outputEl) {
+          inputEl.addEventListener('input', () => {
+            const val = inputEl.value.trim();
+            outputEl.textContent = (binding.prefix || '') + (val || binding.def);
+          });
+        }
+      });
+
+      // Objectives to Bulleted List Handler
+      const inObjectives = document.getElementById('inObjectives');
+      const outObjectives = document.getElementById('outObjectives');
+      if (inObjectives && outObjectives) {
+        inObjectives.addEventListener('input', () => {
+          const lines = inObjectives.value.split('\n').filter(line => line.trim().length > 0);
+          if (lines.length === 0) {
+            outObjectives.innerHTML = `
+              <li>Memberi pendedahan amali terhadap sains robotik dan kod asas.</li>
+              <li>Mencungkil bakat reka cipta dan inovasi murid di peringkat sekolah.</li>
+              <li>Meningkatkan penglibatan aktif murid dalam aktiviti STEM interaktif.</li>
+            `;
+          } else {
+            outObjectives.innerHTML = lines.map(line => {
+              const clean = line.replace(/^[•\-\*]\s*/, '').trim();
+              return `<li>${clean}</li>`;
+            }).join('');
+          }
+        });
+      }
+
+      // 3. Image Upload Handling (Client-side FileReader)
+      for (let i = 1; i <= 5; i++) {
+        const photoIn = document.getElementById(`photoInput${i}`);
+        const capIn = document.getElementById(`capInput${i}`);
+        const photoOut = document.getElementById(`outPhoto${i}`);
+        const phOut = document.getElementById(`outPhotoPh${i}`);
+        const capOut = document.getElementById(`outCap${i}`);
+
+        if (photoIn) {
+          photoIn.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                photoOut.src = event.target.result;
+                photoOut.classList.remove('hidden');
+                phOut.classList.add('hidden');
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        }
+
+        if (capIn) {
+          capIn.addEventListener('input', () => {
+            capOut.textContent = capIn.value.trim() || `${i}. Kapsyen Gambar ${i}`;
+          });
+        }
+      }
+
+      // Clear Photo Action
+      document.querySelectorAll('.btn-clear-photo').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = btn.getAttribute('data-index');
+          const photoIn = document.getElementById(`photoInput${idx}`);
+          const capIn = document.getElementById(`capInput${idx}`);
+          const photoOut = document.getElementById(`outPhoto${idx}`);
+          const phOut = document.getElementById(`outPhotoPh${idx}`);
+          const capOut = document.getElementById(`outCap${idx}`);
+
+          if (photoIn) photoIn.value = '';
+          if (capIn) capIn.value = '';
+          if (photoOut) {
+            photoOut.src = '';
+            photoOut.classList.add('hidden');
+          }
+          if (phOut) phOut.classList.remove('hidden');
+          if (capOut) capOut.textContent = `${idx}. Kapsyen Gambar ${idx}`;
+        });
+      });
+
+      // 4. Sample Photos Handler
+      const samplePhotos = [
+        "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=400&q=80"
+      ];
+
+      const btnFillPhotos = document.getElementById('btnFillSamplePhotos');
+      if (btnFillPhotos) {
+        btnFillPhotos.addEventListener('click', () => {
+          samplePhotos.forEach((url, index) => {
+            const i = index + 1;
+            const photoOut = document.getElementById(`outPhoto${i}`);
+            const phOut = document.getElementById(`outPhotoPh${i}`);
+            const capIn = document.getElementById(`capInput${i}`);
+            const capOut = document.getElementById(`outCap${i}`);
+
+            if (photoOut && phOut) {
+              photoOut.src = url;
+              photoOut.classList.remove('hidden');
+              phOut.classList.add('hidden');
+            }
+            if (capIn && capOut) {
+              const defaultCaps = [
+                "1. Taklimat & Pelancaran Karnival STEM",
+                "2. Sesi Bimbingan Amali Robotik",
+                "3. Eksperimen Sains Interaktif Murid",
+                "4. Pembentangan Projek Inovasi",
+                "5. Majlis Penyampaian Hadiah & Sijil"
+              ];
+              capIn.value = defaultCaps[index];
+              capOut.textContent = defaultCaps[index];
+            }
+          });
+        });
+      }
+
+      // 5. Aesthetic Themes Switcher
+      const themes = {
+        sapphire: {
+          border: 'border-blue-600',
+          bg: 'bg-blue-50/60',
+          topBar: 'from-blue-900 via-blue-700 to-indigo-600',
+          badge: 'bg-blue-50 text-blue-800 border-blue-200',
+          organizer: 'text-blue-700',
+          logoBox: 'bg-[#0b2545]',
+          headers: 'text-blue-900',
+          camIcon: 'text-blue-600'
+        },
+        emerald: {
+          border: 'border-emerald-600',
+          bg: 'bg-emerald-50/60',
+          topBar: 'from-emerald-900 via-emerald-700 to-teal-600',
+          badge: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+          organizer: 'text-emerald-700',
+          logoBox: 'bg-[#064e3b]',
+          headers: 'text-emerald-900',
+          camIcon: 'text-emerald-600'
+        },
+        berry: {
+          border: 'border-purple-600',
+          bg: 'bg-purple-50/60',
+          topBar: 'from-purple-900 via-purple-700 to-pink-600',
+          badge: 'bg-purple-50 text-purple-800 border-purple-200',
+          organizer: 'text-purple-700',
+          logoBox: 'bg-[#581c87]',
+          headers: 'text-purple-900',
+          camIcon: 'text-purple-600'
+        },
+        slate: {
+          border: 'border-slate-700',
+          bg: 'bg-slate-100/80',
+          topBar: 'from-slate-900 via-slate-700 to-slate-600',
+          badge: 'bg-slate-100 text-slate-800 border-slate-300',
+          organizer: 'text-slate-700',
+          logoBox: 'bg-[#1e293b]',
+          headers: 'text-slate-900',
+          camIcon: 'text-slate-600'
+        }
+      };
+
+      const themeBtns = document.querySelectorAll('.theme-btn');
+      themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const selected = btn.getAttribute('data-theme');
+          const cfg = themes[selected];
+          if (!cfg) return;
+
+          // Update active button state
+          themeBtns.forEach(b => {
+            b.className = 'theme-btn border border-slate-200 rounded-xl p-2 text-center flex flex-col items-center gap-1.5 hover:bg-slate-50 transition';
+          });
+          btn.className = `theme-btn border-2 ${cfg.border} rounded-xl p-2 text-center flex flex-col items-center gap-1.5 ${cfg.bg} transition`;
+
+          // Update Document Visual Elements
+          const topBar = document.getElementById('themeTopBar');
+          topBar.className = `absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${cfg.topBar}`;
+
+          const badge = document.getElementById('badgeSchool');
+          badge.className = `px-2.5 py-0.5 rounded-sm text-[10px] font-extrabold tracking-wider uppercase border ${cfg.badge}`;
+
+          document.getElementById('outOrganizer').className = `text-[11px] font-semibold mt-0.5 ${cfg.organizer}`;
+          document.getElementById('themeLogoBox').style.backgroundColor = cfg.logoBox.replace('bg-[', '').replace(']', '');
+          document.getElementById('themeObjHeader').className = `text-[10px] font-bold uppercase tracking-wider border-b border-slate-100 pb-1 mb-1.5 flex items-center gap-1.5 ${cfg.headers}`;
+          document.getElementById('themeImpHeader').className = `text-[10px] font-bold uppercase tracking-wider border-b border-slate-100 pb-1 mb-1.5 flex items-center gap-1.5 ${cfg.headers}`;
+          document.getElementById('themeCamIcon').className = `fa-solid fa-camera ${cfg.camIcon}`;
+        });
+      });
+
+      // 6. Print / Save as PDF Trigger
+      const btnPrint = document.getElementById('btnPrint');
+      if (btnPrint) {
+        btnPrint.addEventListener('click', () => {
+          window.print();
+        });
+      }
+
+      // 7. Reset Form Trigger
+      const btnReset = document.getElementById('btnReset');
+      if (btnReset) {
+        btnReset.addEventListener('click', () => {
+          if (confirm('Adakah anda pasti mahu mengosongkan semua data borang?')) {
+            document.getElementById('oprForm').reset();
+            location.reload();
+          }
+        });
+      }
+
+      // Auto trigger sample photos on start
+      btnFillPhotos.click();
+
+    });
+  </script>
+</body>
+</html>
