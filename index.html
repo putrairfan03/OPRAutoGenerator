@@ -194,6 +194,17 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Sekolah / Institusi</label>
             <input type="text" id="inSchool" class="w-full text-xs sm:text-sm px-3.5 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="SMK Seri Bintang Selatan">
           </div>
+          <div>
+  <label class="block text-xs font-semibold text-slate-700 mb-1">
+    <i class="fa-solid fa-cloud-arrow-up text-blue-600 mr-1"></i> Muat Naik Logo Sekolah / Organisasi
+  </label>
+  <div class="flex items-center gap-2">
+    <input type="file" id="inLogoUpload" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+    <button type="button" id="btnResetLogo" class="hidden text-xs text-red-500 hover:text-red-700 font-semibold px-2 py-1 shrink-0">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  </div>
+</div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Program / Aktiviti <span class="text-red-500">*</span></label>
@@ -336,13 +347,19 @@
             </div>
 
             <!-- Header Badge Info -->
-            <div class="text-right flex flex-col items-end shrink-0">
-              <div class="w-10 h-10 rounded-lg bg-slate-900 text-white flex flex-col items-center justify-center p-1 shadow-xs" id="themeLogoBox">
-                <i class="fa-solid fa-award text-sm"></i>
-                <span class="text-[8px] font-bold tracking-widest uppercase mt-0.5">OPR</span>
-              </div>
-              <span class="text-[9px] font-bold text-slate-400 mt-1 uppercase" id="outDocId">OPR-2026/01</span>
-            </div>
+           <div class="text-right flex flex-col items-end shrink-0">
+  <div class="w-12 h-12 flex items-center justify-end" id="themeLogoContainer">
+    <!-- Gambar Logo Pengguna -->
+    <img id="outCustomLogo" src="" alt="Logo Sekolah" class="max-w-[48px] max-h-[48px] object-contain hidden">
+    
+    <!-- Logo Kotak Hitam Asal (Default sebelum upload) -->
+    <div class="w-10 h-10 rounded-lg bg-slate-900 text-white flex flex-col items-center justify-center p-1 shadow-xs" id="themeLogoBox">
+      <i class="fa-solid fa-award text-sm"></i>
+      <span class="text-[8px] font-bold tracking-widest uppercase mt-0.5">OPR</span>
+    </div>
+  </div>
+  <span class="text-[9px] font-bold text-slate-400 mt-1 uppercase" id="outDocId">OPR-2026/01</span>
+</div>
           </header>
 
           <!-- METADATA GRID TABLE -->
@@ -737,6 +754,38 @@
           document.getElementById('themeCamIcon').className = `fa-solid fa-camera ${cfg.camIcon}`;
         });
       });
+
+      // Logik Muat Naik Logo Sekolah
+      const logoInput = document.getElementById('inLogoUpload');
+      const customLogo = document.getElementById('outCustomLogo');
+      const defaultLogoBox = document.getElementById('themeLogoBox');
+      const btnResetLogo = document.getElementById('btnResetLogo');
+
+      if (logoInput) {
+        logoInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              customLogo.src = event.target.result;
+              customLogo.classList.remove('hidden');
+              defaultLogoBox.classList.add('hidden');
+              btnResetLogo.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      if (btnResetLogo) {
+        btnResetLogo.addEventListener('click', () => {
+          logoInput.value = '';
+          customLogo.src = '';
+          customLogo.classList.add('hidden');
+          defaultLogoBox.classList.remove('hidden');
+          btnResetLogo.classList.add('hidden');
+        });
+      }
 
       // 6. Print / Save as PDF Trigger
       const btnPrint = document.getElementById('btnPrint');
